@@ -39,7 +39,7 @@ def dicts_maker(file) -> List[dict]:
                 temp_dict[key] = value.lstrip()[:-1]
         else:
             temp_dict[key] = temp_dict[key] + '\n' + string.lstrip()[:-1]
-    if len(temp_dict):
+    if temp_dict:
         dicts.append(temp_dict)
     return dicts
 
