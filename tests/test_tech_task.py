@@ -1,5 +1,8 @@
+import unittest
+# import pytest
 from tech_task.parser import dicts_maker
 from tech_task.parser import parse_file
+from tech_task.parser import FileTypeNotSupported
 
 example_result = {'as-block': 'AS30720 - AS30979',
                   'type': 'REGULAR',
@@ -24,17 +27,54 @@ example_result = {'as-block': 'AS30720 - AS30979',
                   'source': 'AFRINIC'}
 
 
-def test_dicts_maker():
-    path = 'tests/example.txt'
-    with open(path, 'r') as file:
-        assert dicts_maker(file)[0] == example_result
+# В задании указано использовать только стандартные библиотеки, но обычно для тестирования я использую pytest
+class TestParsers(unittest.TestCase):
+    def test_dicts_maker(self):
+        path = 'tests/example.txt'
+        with open(path, 'r') as file:
+            self.assertEqual(dicts_maker(file)[0], example_result)
 
+    def test_parse_txt(self):
+        path = 'tests/example.txt'
+        self.assertEqual(parse_file(path)[0], example_result)
 
-def test_parse_txt():
-    path = 'tests/example.txt'
-    assert parse_file(path)[0] == example_result
+    def test_parse_gzip(self):
+        path = 'tests/file.txt.gz'
+        self.assertEqual(parse_file(path)[0], example_result)
 
+    def test_fail_not_found(self):
+        path = 'tests/file.txtz'
+        with self.assertRaises(FileNotFoundError) as e_info:
+            parse_file(path)[0]
 
-def test_parse_gzip():
-    path = 'tests/file.txt.gz'
-    assert parse_file(path)[0] == example_result
+    def test_fail_not_supported(self):
+        with self.assertRaises(FileTypeNotSupported) as e_info:
+            path = 'tests/err.err'
+            parse_file(path)[0]
+
+# def test_dicts_maker():
+#     path = 'tests/example.txt'
+#     with open(path, 'r') as file:
+#         assert dicts_maker(file)[0] == example_result
+#
+#
+# def test_parse_txt():
+#     path = 'tests/example.txt'
+#     assert parse_file(path)[0] == example_result
+#
+#
+# def test_parse_gzip():
+#     path = 'tests/file.txt.gz'
+#     assert parse_file(path)[0] == example_result
+#
+#
+# def test_fail_not_found():
+#     with pytest.raises(FileNotFoundError) as e_info:
+#         path = 'tests/file.txtz'
+#         parse_file(path)[0]
+#
+#
+# def test_fail_not_supported():
+#     with pytest.raises(FileTypeNotSupported) as e_info:
+#         path = 'tests/err.err'
+#         parse_file(path)[0]
